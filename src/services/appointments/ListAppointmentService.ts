@@ -2,12 +2,16 @@ import { parseISO } from 'date-fns';
 import { injectable, inject } from 'tsyringe';
 
 import AppError from 'errors/AppError';
+import Clients from 'models/entities/Clients';
+import CommodityTypes from 'models/entities/CommodityTypes';
 import Appointments from '../../models/entities/Appointments';
 
 import IAppointmentsRepository from '../../repositories/types/IAppointmentsRepository';
 
 import BusyTimesRepository from '../../repositories/BusyTimesRepository';
 import TeamsRepository from '../../repositories/TeamsRepository';
+import ClientsRepository from '../../repositories/ClientsRepository';
+import CommodityTypesRepository from '../../repositories/CommodityTypesRepository';
 
 interface IRequest {
   contract_id: number;
@@ -15,8 +19,13 @@ interface IRequest {
   date: string;
 }
 
+interface ICustomAppointment extends Appointments {
+  clientData?: Clients;
+  commodityTypeData?: CommodityTypes;
+}
+
 interface IResponse {
-  [team: string]: Appointments[];
+  [team: string]: ICustomAppointment[];
 }
 
 @injectable()
@@ -35,6 +44,11 @@ class ListAppointmentService {
 
     const busyTimesRepository = new BusyTimesRepository();
     const teamsRepository = new TeamsRepository();
+    const clientsRepository = new ClientsRepository();
+    const commodityTypesRepository = new CommodityTypesRepository();
+
+    const clients = await clientsRepository.list(contract_id);
+    const types = await commodityTypesRepository.list(contract_id);
 
     const parsedDate = parseISO(date);
 
@@ -78,9 +92,27 @@ class ListAppointmentService {
     if (appoitments) {
       appoitments.forEach(appoitment => {
         if (appointmentsByTeam[String(appoitment.team_id)]) {
-          appointmentsByTeam[String(appoitment.team_id)].push(appoitment);
+          appointmentsByTeam[String(appoitment.team_id)].push({
+            ...appoitment,
+            clientData: clients.find(
+              client => client.id === appoitment.client_id,
+            ),
+            commodityTypeData: types.find(
+              type => type.id === appoitment.commodity_types_id,
+            ),
+          });
         } else {
-          appointmentsByTeam[String(appoitment.team_id)] = [appoitment];
+          appointmentsByTeam[String(appoitment.team_id)] = [
+            {
+              ...appoitment,
+              clientData: clients.find(
+                client => client.id === appoitment.client_id,
+              ),
+              commodityTypeData: types.find(
+                type => type.id === appoitment.commodity_types_id,
+              ),
+            },
+          ];
         }
       });
     }
