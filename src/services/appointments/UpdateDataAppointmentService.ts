@@ -68,7 +68,7 @@ class UpdateDataAppointmentService {
 
     // recalcular o grid_index se necessário;
     if (data.commodity_type || data.amount) {
-      const grids = await calculateGridIndex({
+      const { grids } = await calculateGridIndex({
         amount: newAppointment.amount,
         commodity_types_id: newAppointment.commodity_types_id,
       });
