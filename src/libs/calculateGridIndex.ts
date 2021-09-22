@@ -1,3 +1,4 @@
+import CommodityTypes from 'models/entities/CommodityTypes';
 import CommodityTypesRepository from 'repositories/CommodityTypesRepository';
 import AppError from '../errors/AppError';
 
@@ -6,10 +7,15 @@ interface IParamsCalculateGrid {
   amount: number;
 }
 
+interface IReturnData {
+  grids: number;
+  commodityType: CommodityTypes;
+}
+
 const calculateGridIndex = async ({
   commodity_types_id,
   amount,
-}: IParamsCalculateGrid): Promise<number> => {
+}: IParamsCalculateGrid): Promise<IReturnData> => {
   try {
     const commodityTypesRepository = new CommodityTypesRepository();
 
@@ -22,7 +28,7 @@ const calculateGridIndex = async ({
 
     const predictedTimeMinutes = amount / commodityType.average_operating_time;
 
-    return Math.ceil(predictedTimeMinutes / 30);
+    return { grids: Math.ceil(predictedTimeMinutes / 30), commodityType };
   } catch (error) {
     throw new AppError(error);
   }

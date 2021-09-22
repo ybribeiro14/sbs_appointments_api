@@ -9,6 +9,7 @@ import { parseISO } from 'date-fns';
 import CreateAppointmentService from '../services/appointments/CreateAppointmentService';
 import ListAppointmentService from '../services/appointments/ListAppointmentService';
 import CancelAppointmentService from '../services/appointments/CancelAppointmentService';
+import { io } from '../http';
 
 export default class AppointmentsController {
   public async create(request: Request, response: Response): Promise<Response> {
@@ -65,6 +66,10 @@ export default class AppointmentsController {
       doc_container,
       obs,
       userLogin,
+    });
+
+    io.to(`loading_module_${contract_id}`).emit('new_appointment', {
+      appointment,
     });
 
     return response.json({ appointment });

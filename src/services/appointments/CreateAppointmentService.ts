@@ -1,4 +1,4 @@
-import { addMinutes, isBefore, format, parseISO, getTime } from 'date-fns';
+import { isBefore, format, parseISO, getTime } from 'date-fns';
 import { injectable, inject } from 'tsyringe';
 
 import validadeContract from 'libs/validateContract';
@@ -7,6 +7,9 @@ import generateTimesNeeds from 'libs/generateTimesNeeds';
 import TeamsRepository from 'repositories/TeamsRepository';
 import ClientsRepository from 'repositories/ClientsRepository';
 import checkTimeAvailable from 'libs/checkTimeAvailable';
+import Clients from 'models/entities/Clients';
+import CommodityTypes from 'models/entities/CommodityTypes';
+import { IStatusHistory } from 'interfaces/statusHistory';
 import AppError from '../../errors/AppError';
 
 import Appointments from '../../models/entities/Appointments';
@@ -31,6 +34,12 @@ interface IRequest {
   userLogin: string;
 }
 
+interface ICustomAppointment extends Appointments {
+  clientData?: Clients;
+  commodityTypeData?: CommodityTypes;
+  statusHistory: IStatusHistory;
+}
+
 @injectable()
 class CreateAppointmentService {
   constructor(
@@ -52,7 +61,7 @@ class CreateAppointmentService {
     doc_container,
     obs,
     userLogin,
-  }: IRequest): Promise<Appointments> {
+  }: IRequest): Promise<ICustomAppointment> {
     await validadeContract(contract_id);
 
     const parsedDate = parseISO(date);
@@ -82,7 +91,10 @@ class CreateAppointmentService {
       throw new AppError('Cliente informado não existe!');
     }
 
-    const grids = await calculateGridIndex({ amount, commodity_types_id });
+    const { grids, commodityType } = await calculateGridIndex({
+      amount,
+      commodity_types_id,
+    });
 
     const timesGridsNeeds = generateTimesNeeds(parsedDateTime, grids);
 
@@ -160,7 +172,7 @@ class CreateAppointmentService {
       },
     ];
 
-    await appointmentsStatusRepository.create({
+    const { status_history } = await appointmentsStatusRepository.create({
       appointment_id: appointment.id,
       code,
       contract_id,
@@ -168,7 +180,12 @@ class CreateAppointmentService {
       status_history: JSON.stringify(status),
     });
 
-    return appointment;
+    return {
+      ...appointment,
+      clientData: checkClient,
+      commodityTypeData: commodityType,
+      statusHistory: JSON.parse(status_history),
+    };
   }
 }
 

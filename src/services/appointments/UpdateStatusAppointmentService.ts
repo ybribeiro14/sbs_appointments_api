@@ -10,6 +10,7 @@ import {
 import IAppointmentsRepository from '../../repositories/types/IAppointmentsRepository';
 
 import AppointmentsStatusRepository from '../../repositories/AppointmentsStatusRepository';
+import { io } from '../../http';
 
 interface IRequest {
   appointment_id: number;
@@ -168,6 +169,14 @@ class UpdateStatusAppointmentService {
     // Atualizar status na tabela;
 
     await this.appointmentsRepository.updateStatus(appointment.id, statusId);
+
+    io.to(`loading_module_${appointment.contract_id}`).emit(
+      'update_appointment',
+      {
+        module: appointment.module,
+        date: appointment.date,
+      },
+    );
 
     return statusHistory;
   }

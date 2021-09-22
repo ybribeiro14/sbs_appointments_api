@@ -4,6 +4,7 @@ import { injectable, inject } from 'tsyringe';
 import AppError from 'errors/AppError';
 import Clients from 'models/entities/Clients';
 import CommodityTypes from 'models/entities/CommodityTypes';
+import { IStatusHistory } from 'interfaces/statusHistory';
 import Appointments from '../../models/entities/Appointments';
 
 import IAppointmentsRepository from '../../repositories/types/IAppointmentsRepository';
@@ -18,13 +19,6 @@ interface IRequest {
   contract_id: number;
   module: string;
   date: string;
-}
-
-interface IStatusHistory {
-  status: string;
-  timestamp: number;
-  date_formated: string;
-  user: string;
 }
 
 interface ICustomAppointment extends Appointments {
