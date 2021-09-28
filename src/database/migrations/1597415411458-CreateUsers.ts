@@ -31,10 +31,6 @@ export default class CreateUsers1597415411458 implements MigrationInterface {
             type: 'int',
           },
           {
-            name: 'permission_id',
-            type: 'int',
-          },
-          {
             name: 'spawn_module',
             type: 'boolean',
           },
@@ -44,6 +40,22 @@ export default class CreateUsers1597415411458 implements MigrationInterface {
           },
           {
             name: 'inventory_module',
+            type: 'boolean',
+          },
+          {
+            name: 'painel_adm',
+            type: 'boolean',
+          },
+          {
+            name: 'lecturer',
+            type: 'boolean',
+          },
+          {
+            name: 'concierge',
+            type: 'boolean',
+          },
+          {
+            name: 'supervisor',
             type: 'boolean',
           },
           {

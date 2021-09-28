@@ -12,7 +12,10 @@ export default class UsersController {
       name: Yup.string().required(),
       login: Yup.string().required(),
       password: Yup.string().required(),
-      permission_id: Yup.number().required(),
+      painel_adm: Yup.boolean().required(),
+      concierge: Yup.boolean().required(),
+      lecturer: Yup.boolean().required(),
+      supervisor: Yup.boolean().required(),
       spawn_module: Yup.boolean().required(),
       loading_module: Yup.boolean().required(),
       inventory_module: Yup.boolean().required(),
@@ -24,9 +27,9 @@ export default class UsersController {
       });
     }
 
-    const userRequest = JSON.parse(request.user.id);
+    // const userRequest = JSON.parse(request.user.id);
 
-    const { contract_id } = userRequest;
+    // const { contract_id } = userRequest;
 
     const {
       name,
@@ -36,6 +39,10 @@ export default class UsersController {
       spawn_module,
       loading_module,
       inventory_module,
+      painel_adm,
+      concierge,
+      lecturer,
+      supervisor,
     } = request.body;
 
     // Usa o provider para prover o Repositório
@@ -44,11 +51,15 @@ export default class UsersController {
       name,
       login,
       password,
-      contract_id,
+      contract_id: 1,
       permission_id,
       spawn_module,
       loading_module,
       inventory_module,
+      painel_adm,
+      concierge,
+      lecturer,
+      supervisor,
     });
 
     // Com a atualização do TypeScript, isso se faz necessário
@@ -57,12 +68,15 @@ export default class UsersController {
       name: user.name,
       login: user.login,
       contract_id: user.contract_id,
-      permission_id: user.permission_id,
       created_at: user.created_at,
       updated_at: user.updated_at,
       spawn_module: user.spawn_module,
       loading_module: user.loading_module,
       inventory_module: user.inventory_module,
+      painel_adm: user.painel_adm,
+      concierge: user.concierge,
+      lecturer: user.lecturer,
+      supervisor: user.supervisor,
     };
 
     return response.json(userWithoutPassword);

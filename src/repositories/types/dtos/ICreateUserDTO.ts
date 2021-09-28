@@ -7,4 +7,8 @@ export default interface ICreateUserDTO {
   spawn_module: boolean;
   loading_module: boolean;
   inventory_module: boolean;
+  painel_adm: boolean;
+  concierge: boolean;
+  lecturer: boolean;
+  supervisor: boolean;
 }
