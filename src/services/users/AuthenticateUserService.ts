@@ -38,7 +38,7 @@ class AuthenticateUserService {
     const user = await this.usersRepository.findByLogin(login, contract_id);
 
     if (!user) {
-      throw new AppError('Incorrect login/password combination', 401);
+      throw new AppError('Combinação contrato/login/senha incorreta.');
     }
 
     const passwordMatched = await this.hashProvider.compareHash(
@@ -47,7 +47,7 @@ class AuthenticateUserService {
     );
 
     if (!passwordMatched) {
-      throw new AppError('Incorrect login/password combination', 401);
+      throw new AppError('Combinação contrato/login/senha incorreta.');
     }
 
     const { expiresIn, secret } = authConfig.jwt;

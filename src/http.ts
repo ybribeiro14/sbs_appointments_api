@@ -24,8 +24,8 @@ app.use(routes);
 app.use((err: Error, request: Request, response: Response, _: NextFunction) => {
   if (err instanceof AppError) {
     return response
-      .status(err.statusCode)
-      .json({ status: 'error', message: err.message });
+      .status(200)
+      .json({ status: err.statusCode, message: err.message });
   }
 
   console.error(err);
