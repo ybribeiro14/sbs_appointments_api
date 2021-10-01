@@ -27,9 +27,9 @@ export default class UsersController {
       });
     }
 
-    // const userRequest = JSON.parse(request.user.id);
+    const userRequest = JSON.parse(request.user.id);
 
-    // const { contract_id } = userRequest;
+    const { contract_id } = userRequest;
 
     const {
       name,
@@ -51,7 +51,7 @@ export default class UsersController {
       name,
       login,
       password,
-      contract_id: 1,
+      contract_id,
       permission_id,
       spawn_module,
       loading_module,
