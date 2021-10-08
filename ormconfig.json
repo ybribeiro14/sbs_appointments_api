@@ -5,7 +5,7 @@
     "host": "localhost",
     "port": 3306,
     "username": "root",
-    "password": "sbs2021",
+    "password": "251194",
     "database": "sbs_appointments",
     "entities": [
       "./src/models/entities/*.ts"

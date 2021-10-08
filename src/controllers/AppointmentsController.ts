@@ -9,6 +9,7 @@ import { parseISO } from 'date-fns';
 import CreateAppointmentService from '../services/appointments/CreateAppointmentService';
 import ListAppointmentService from '../services/appointments/ListAppointmentService';
 import CancelAppointmentService from '../services/appointments/CancelAppointmentService';
+import { io } from '../http';
 
 export default class AppointmentsController {
   public async create(request: Request, response: Response): Promise<Response> {
@@ -31,6 +32,7 @@ export default class AppointmentsController {
         statusCode: 400,
       });
     }
+
     const user = JSON.parse(request.user.id);
 
     const { contract_id, login: userLogin } = user;
@@ -49,6 +51,13 @@ export default class AppointmentsController {
       obs,
     } = request.body;
 
+    if (module === 'spawn_module' && (doc_container === '' || !doc_container)) {
+      return response.json({
+        error: 'O container é obrigatório no módulo de desova',
+        statusCode: 400,
+      });
+    }
+
     const createAppointment = container.resolve(CreateAppointmentService);
 
     const appointment = await createAppointment.execute({
@@ -65,6 +74,10 @@ export default class AppointmentsController {
       doc_container,
       obs,
       userLogin,
+    });
+
+    io.to(`loading_module_${contract_id}`).emit('new_appointment', {
+      appointment,
     });
 
     return response.json({ appointment });

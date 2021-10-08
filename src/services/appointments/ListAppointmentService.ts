@@ -2,12 +2,18 @@ import { parseISO } from 'date-fns';
 import { injectable, inject } from 'tsyringe';
 
 import AppError from 'errors/AppError';
+import Clients from 'models/entities/Clients';
+import CommodityTypes from 'models/entities/CommodityTypes';
+import { IStatusHistory } from 'interfaces/statusHistory';
 import Appointments from '../../models/entities/Appointments';
 
 import IAppointmentsRepository from '../../repositories/types/IAppointmentsRepository';
 
 import BusyTimesRepository from '../../repositories/BusyTimesRepository';
 import TeamsRepository from '../../repositories/TeamsRepository';
+import ClientsRepository from '../../repositories/ClientsRepository';
+import CommodityTypesRepository from '../../repositories/CommodityTypesRepository';
+import AppointmentsStatusRepository from '../../repositories/AppointmentsStatusRepository';
 
 interface IRequest {
   contract_id: number;
@@ -15,8 +21,14 @@ interface IRequest {
   date: string;
 }
 
+interface ICustomAppointment extends Appointments {
+  clientData?: Clients;
+  commodityTypeData?: CommodityTypes;
+  statusHistory: IStatusHistory;
+}
+
 interface IResponse {
-  [team: string]: Appointments[];
+  [team: string]: ICustomAppointment[];
 }
 
 @injectable()
@@ -35,6 +47,12 @@ class ListAppointmentService {
 
     const busyTimesRepository = new BusyTimesRepository();
     const teamsRepository = new TeamsRepository();
+    const clientsRepository = new ClientsRepository();
+    const commodityTypesRepository = new CommodityTypesRepository();
+    const appointmentsStatusRepository = new AppointmentsStatusRepository();
+
+    const clients = await clientsRepository.list(contract_id);
+    const types = await commodityTypesRepository.list(contract_id);
 
     const parsedDate = parseISO(date);
 
@@ -74,15 +92,46 @@ class ListAppointmentService {
     });
 
     const appointmentsByTeam: IResponse = {};
-
     if (appoitments) {
-      appoitments.forEach(appoitment => {
-        if (appointmentsByTeam[String(appoitment.team_id)]) {
-          appointmentsByTeam[String(appoitment.team_id)].push(appoitment);
-        } else {
-          appointmentsByTeam[String(appoitment.team_id)] = [appoitment];
-        }
-      });
+      await Promise.all(
+        appoitments.map(async appoitment => {
+          const statusHistory = await appointmentsStatusRepository.findById(
+            appoitment.id,
+          );
+
+          let history = {} as IStatusHistory;
+
+          if (statusHistory) {
+            history = JSON.parse(statusHistory?.status_history);
+          }
+
+          if (appointmentsByTeam[String(appoitment.team_id)]) {
+            appointmentsByTeam[String(appoitment.team_id)].push({
+              ...appoitment,
+              clientData: clients.find(
+                client => client.id === appoitment.client_id,
+              ),
+              commodityTypeData: types.find(
+                type => type.id === appoitment.commodity_types_id,
+              ),
+              statusHistory: history,
+            });
+          } else {
+            appointmentsByTeam[String(appoitment.team_id)] = [
+              {
+                ...appoitment,
+                clientData: clients.find(
+                  client => client.id === appoitment.client_id,
+                ),
+                commodityTypeData: types.find(
+                  type => type.id === appoitment.commodity_types_id,
+                ),
+                statusHistory: history,
+              },
+            ];
+          }
+        }),
+      );
     }
 
     return appointmentsByTeam;

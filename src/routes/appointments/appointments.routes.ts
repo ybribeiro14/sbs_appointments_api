@@ -12,7 +12,7 @@ appointmentsRouter.post('/', appointmentsController.create);
 appointmentsRouter.post('/cancel', appointmentsController.cancel);
 appointmentsRouter.get('/:module/:date', appointmentsController.list);
 appointmentsRouter.put(
-  '/status/:statusId/:appointmentId',
+  '/status/:statusId/appointment/:appointmentId',
   appointmentsController.updateStatus,
 );
 appointmentsRouter.put('/:appointment_id', appointmentsController.update);

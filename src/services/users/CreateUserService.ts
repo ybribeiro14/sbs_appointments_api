@@ -16,6 +16,10 @@ interface IRequest {
   spawn_module: boolean;
   loading_module: boolean;
   inventory_module: boolean;
+  painel_adm: boolean;
+  concierge: boolean;
+  lecturer: boolean;
+  supervisor: boolean;
 }
 
 @injectable()
@@ -37,6 +41,10 @@ class CreateUserService {
     spawn_module,
     loading_module,
     inventory_module,
+    painel_adm,
+    concierge,
+    lecturer,
+    supervisor,
   }: IRequest): Promise<User> {
     await validadeContract(contract_id);
 
@@ -60,6 +68,10 @@ class CreateUserService {
       spawn_module,
       loading_module,
       inventory_module,
+      painel_adm,
+      concierge,
+      lecturer,
+      supervisor,
     });
 
     return user;

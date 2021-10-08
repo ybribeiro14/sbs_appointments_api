@@ -19,10 +19,16 @@ export default class SessionsController {
       id: user.id,
       name: user.name,
       login: user.login,
-      permission_id: user.permission_id,
       contract_id: user.contract_id,
       created_at: user.created_at,
       updated_at: user.updated_at,
+      spawn_module: user.spawn_module,
+      loading_module: user.loading_module,
+      inventory_module: user.inventory_module,
+      painel_adm: user.painel_adm,
+      concierge: user.concierge,
+      lecturer: user.lecturer,
+      supervisor: user.supervisor,
     };
 
     return response.json({ user: userWithoutPassword, token });

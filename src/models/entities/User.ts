@@ -21,9 +21,6 @@ class Users {
   password: string;
 
   @Column()
-  permission_id: number;
-
-  @Column()
   contract_id: number;
 
   @Column()
@@ -34,6 +31,18 @@ class Users {
 
   @Column()
   inventory_module: boolean;
+
+  @Column()
+  painel_adm: boolean;
+
+  @Column()
+  lecturer: boolean;
+
+  @Column()
+  concierge: boolean;
+
+  @Column()
+  supervisor: boolean;
 
   @CreateDateColumn()
   created_at: Date;
