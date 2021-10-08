@@ -32,6 +32,7 @@ export default class AppointmentsController {
         statusCode: 400,
       });
     }
+
     const user = JSON.parse(request.user.id);
 
     const { contract_id, login: userLogin } = user;
@@ -49,6 +50,13 @@ export default class AppointmentsController {
       doc_container,
       obs,
     } = request.body;
+
+    if (module === 'spawn_module' && (doc_container === '' || !doc_container)) {
+      return response.json({
+        error: 'O container é obrigatório no módulo de desova',
+        statusCode: 400,
+      });
+    }
 
     const createAppointment = container.resolve(CreateAppointmentService);
 
