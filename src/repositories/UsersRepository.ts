@@ -1,6 +1,5 @@
 import { getRepository, Repository } from 'typeorm';
 
-import AppError from 'errors/AppError';
 import ICreateUserDTO from './types/dtos/ICreateUserDTO';
 import IUsersRepository from './types/IUsersRepository';
 
@@ -19,7 +18,7 @@ class UsersRepository implements IUsersRepository {
 
       return findUser;
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -34,7 +33,7 @@ class UsersRepository implements IUsersRepository {
 
       return findUser;
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -46,7 +45,7 @@ class UsersRepository implements IUsersRepository {
 
       return user;
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -54,7 +53,7 @@ class UsersRepository implements IUsersRepository {
     try {
       return this.ormRepository.save(user);
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -64,7 +63,7 @@ class UsersRepository implements IUsersRepository {
         where: { contract_id },
       });
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -79,11 +78,11 @@ class UsersRepository implements IUsersRepository {
         },
       );
       if (!userUpdated) {
-        throw new AppError('Não foi possível realizar o update', 401);
+        throw new Error('Não foi possível realizar o update');
       }
       return true;
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -94,7 +93,7 @@ class UsersRepository implements IUsersRepository {
       });
       return true;
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 }

@@ -1,5 +1,4 @@
 import { addMinutes, format } from 'date-fns';
-import AppError from '../errors/AppError';
 
 const generateTimesNeeds = (time: Date, grids: number): string[] => {
   try {
@@ -7,7 +6,7 @@ const generateTimesNeeds = (time: Date, grids: number): string[] => {
     let newTime = time;
     for (let index = 0; index < grids; index++) {
       if (format(time, 'yyyy-MM-dd') !== format(newTime, 'yyyy-MM-dd')) {
-        throw new AppError(
+        throw new Error(
           'Não há espaço suficiente na grade para este agendamento',
         );
       }
@@ -20,7 +19,7 @@ const generateTimesNeeds = (time: Date, grids: number): string[] => {
 
     return timesGridsNeeds;
   } catch (error) {
-    throw new AppError(error);
+    throw new Error((error as Error).message);
   }
 };
 

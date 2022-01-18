@@ -1,6 +1,5 @@
 import { getRepository, Repository } from 'typeorm';
 
-import AppError from 'errors/AppError';
 import ICreateTeamsDTO from './types/dtos/ICreateTeamsDTO';
 import ITeamsRepository from './types/ITeamsRepository';
 
@@ -27,7 +26,7 @@ class TeamsRepository implements ITeamsRepository {
 
       return findTeam;
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -42,7 +41,7 @@ class TeamsRepository implements ITeamsRepository {
 
       return findTeams;
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -52,7 +51,7 @@ class TeamsRepository implements ITeamsRepository {
 
       return findTeam;
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -64,7 +63,7 @@ class TeamsRepository implements ITeamsRepository {
 
       return teams;
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -72,7 +71,7 @@ class TeamsRepository implements ITeamsRepository {
     try {
       return this.ormRepository.save(teams);
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -84,7 +83,7 @@ class TeamsRepository implements ITeamsRepository {
         },
       });
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -99,11 +98,11 @@ class TeamsRepository implements ITeamsRepository {
         },
       );
       if (!teamsUpdated) {
-        throw new AppError('Não foi possível realizar o update', 401);
+        throw new Error('Não foi possível realizar o update');
       }
       return true;
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -114,7 +113,7 @@ class TeamsRepository implements ITeamsRepository {
       });
       return true;
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 }

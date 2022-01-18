@@ -1,6 +1,5 @@
 import BusyTimesRepository from 'repositories/BusyTimesRepository';
 import { ObjectID } from 'typeorm';
-import AppError from '../errors/AppError';
 
 interface IParamsCheckTimeAvailable {
   contract_id: number;
@@ -39,9 +38,7 @@ const checkTimeAvailable = async ({
           (item: string) => item === hourTime,
         );
         if (findTimeBusy) {
-          throw new AppError(
-            'Não existe espaço na grade para este agendamento',
-          );
+          throw new Error('Não existe espaço na grade para este agendamento');
         }
       });
     } else {
@@ -66,7 +63,7 @@ const checkTimeAvailable = async ({
       idBusyTimes: busyTimesByDate.id,
     };
   } catch (error) {
-    throw new AppError(error);
+    throw new Error((error as Error).message);
   }
 };
 

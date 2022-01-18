@@ -16,5 +16,9 @@ appointmentsRouter.put(
   appointmentsController.updateStatus,
 );
 appointmentsRouter.put('/:appointment_id', appointmentsController.update);
+appointmentsRouter.post(
+  '/available/hours',
+  appointmentsController.listAvaiableHours,
+);
 
 export default appointmentsRouter;

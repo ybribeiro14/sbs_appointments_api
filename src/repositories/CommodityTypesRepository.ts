@@ -1,6 +1,5 @@
 import { getRepository, Repository } from 'typeorm';
 
-import AppError from 'errors/AppError';
 import ICreateCommodityTypeDTO from './types/dtos/ICreateCommodityTypeDTO';
 import ICommodityTypesRepository from './types/ICommodityTypesRepository';
 
@@ -27,7 +26,7 @@ class CommodityTypesRepository implements ICommodityTypesRepository {
 
       return findCommodityType;
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -37,7 +36,7 @@ class CommodityTypesRepository implements ICommodityTypesRepository {
 
       return findCommodityType;
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -51,7 +50,7 @@ class CommodityTypesRepository implements ICommodityTypesRepository {
 
       return commodityType;
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -59,7 +58,7 @@ class CommodityTypesRepository implements ICommodityTypesRepository {
     try {
       return this.ormRepository.save(commodityTypes);
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -71,7 +70,7 @@ class CommodityTypesRepository implements ICommodityTypesRepository {
         },
       });
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -87,11 +86,11 @@ class CommodityTypesRepository implements ICommodityTypesRepository {
         },
       );
       if (!commodityTypeUpdated) {
-        throw new AppError('Não foi possível realizar o update', 401);
+        throw new Error('Não foi possível realizar o update');
       }
       return true;
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -102,7 +101,7 @@ class CommodityTypesRepository implements ICommodityTypesRepository {
       });
       return true;
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 }

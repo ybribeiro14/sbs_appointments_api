@@ -1,5 +1,4 @@
 import ContractsRepository from 'repositories/ContractsRepository';
-import AppError from '../errors/AppError';
 
 const validadeContract = async (contract_id: number): Promise<boolean> => {
   try {
@@ -7,12 +6,12 @@ const validadeContract = async (contract_id: number): Promise<boolean> => {
 
     const checkContract = await contractsRepository.findById(contract_id);
     if (!checkContract) {
-      throw new AppError('Contrato informado não possui cadastro.');
+      throw new Error('Contrato informado não possui cadastro.');
     }
 
     return true;
   } catch (error) {
-    throw new AppError(error);
+    throw new Error((error as Error).message);
   }
 };
 
