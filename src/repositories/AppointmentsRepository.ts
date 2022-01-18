@@ -1,6 +1,5 @@
 import { Between, getRepository, Repository } from 'typeorm';
 
-import AppError from 'errors/AppError';
 import ICreateAppointmentsDTO from './types/dtos/ICreateAppointmentsDTO';
 import IListAppointmentsDTO from './types/dtos/IListAppointmentsDTO';
 import IAppointmentsRepository from './types/IAppointmentsRepository';
@@ -107,11 +106,11 @@ class AppointmentsRepository implements IAppointmentsRepository {
         },
       );
       if (!clientUpdated) {
-        throw new AppError('Não foi possível realizar o update de status', 401);
+        throw new Error('Não foi possível realizar o update de status');
       }
       return true;
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -129,11 +128,11 @@ class AppointmentsRepository implements IAppointmentsRepository {
         },
       );
       if (!clientUpdated) {
-        throw new AppError('Não foi possível realizar o update de status', 401);
+        throw new Error('Não foi possível realizar o update de status');
       }
       return dataUpdate;
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 }

@@ -1,5 +1,6 @@
 import AppError from 'errors/AppError';
 import { Request, Response } from 'express';
+import ResponseSuccess from 'libs/responseSuccess';
 import validadeContract from 'libs/validateContract';
 import * as Yup from 'yup';
 
@@ -7,111 +8,142 @@ import TeamsRepository from '../repositories/TeamsRepository';
 
 export default class TeamsController {
   public async create(request: Request, response: Response): Promise<Response> {
-    const schema = Yup.object().shape({
-      name: Yup.string().required(),
-    });
-    if (!(await schema.isValid(request.body))) {
-      return response.json({
-        error: 'Falha na validação',
-        statusCode: 400,
+    try {
+      const schema = Yup.object().shape({
+        name: Yup.string().required(),
       });
+      if (!(await schema.isValid(request.body))) {
+        throw new Error('Falha na validação');
+      }
+
+      const user = JSON.parse(request.user.id);
+
+      const { contract_id } = user;
+
+      const { name } = request.body;
+
+      await validadeContract(contract_id);
+
+      const teamsRepository = new TeamsRepository();
+
+      const commodityTypeExist = await teamsRepository.findByName(
+        name,
+        contract_id,
+      );
+
+      if (commodityTypeExist) {
+        throw new Error('Já existe um time com este nome.');
+      }
+
+      const team = await teamsRepository.create({
+        name,
+        enable: true,
+        contract_id,
+      });
+
+      return response.json(new ResponseSuccess({ team }));
+    } catch (error) {
+      return response.json(
+        new AppError(
+          'Falha ao tentar criar uma equipe',
+          (error as Error).message,
+        ),
+      );
     }
-
-    const user = JSON.parse(request.user.id);
-
-    const { contract_id } = user;
-
-    const { name } = request.body;
-
-    await validadeContract(contract_id);
-
-    const teamsRepository = new TeamsRepository();
-
-    const commodityTypeExist = await teamsRepository.findByName(
-      name,
-      contract_id,
-    );
-
-    if (commodityTypeExist) {
-      throw new AppError('Já existe um time com este nome.');
-    }
-
-    const team = await teamsRepository.create({
-      name,
-      enable: true,
-      contract_id,
-    });
-
-    return response.json(team);
   }
 
   public async list(request: Request, response: Response): Promise<Response> {
-    const teamsRepository = new TeamsRepository();
+    try {
+      const teamsRepository = new TeamsRepository();
 
-    const user = JSON.parse(request.user.id);
+      const user = JSON.parse(request.user.id);
 
-    const { contract_id } = user;
+      const { contract_id } = user;
 
-    const teams = await teamsRepository.list(contract_id);
-    return response.json(teams);
+      const teams = await teamsRepository.list(contract_id);
+      return response.json(new ResponseSuccess({ teams }));
+    } catch (error) {
+      return response.json(
+        new AppError(
+          'Falha ao tentar listar uma equipe',
+          (error as Error).message,
+        ),
+      );
+    }
   }
 
   public async update(request: Request, response: Response): Promise<Response> {
-    const paramsValidation = {
-      id: request.params.id,
-      enable: request.body.enable,
-    };
-    const schema = Yup.object().shape({
-      id: Yup.number().required(),
-      enable: Yup.boolean().required(),
-    });
-    if (!(await schema.isValid(paramsValidation))) {
-      return response.json({
-        error: 'Falha na validação',
-        statusCode: 400,
+    try {
+      const paramsValidation = {
+        id: request.params.id,
+        enable: request.body.enable,
+      };
+      const schema = Yup.object().shape({
+        id: Yup.number().required(),
+        enable: Yup.boolean().required(),
       });
+      if (!(await schema.isValid(paramsValidation))) {
+        throw new Error('Falha na validação');
+      }
+
+      const teamsRepository = new TeamsRepository();
+      const { id } = request.params;
+      const checkTeamExists = await teamsRepository.findById(Number(id));
+
+      if (!checkTeamExists) {
+        throw new Error('ID da equipe informado não foi encontrado.');
+      }
+
+      await teamsRepository.update({
+        id: Number(id),
+        ...request.body,
+      });
+
+      return response.json(
+        new ResponseSuccess({
+          message: 'Equipe atualizado com sucesso',
+        }),
+      );
+    } catch (error) {
+      return response.json(
+        new AppError(
+          'Falha ao tentar atualizar uma equipe',
+          (error as Error).message,
+        ),
+      );
     }
-
-    const teamsRepository = new TeamsRepository();
-    const { id } = request.params;
-    const checkTeamExists = await teamsRepository.findById(Number(id));
-
-    if (!checkTeamExists) {
-      throw new AppError('ID da equipe informado não foi encontrado.');
-    }
-
-    await teamsRepository.update({
-      id: Number(id),
-      ...request.body,
-    });
-
-    return response.json({
-      message: 'Equipe atualizado com sucesso',
-    });
   }
 
   public async delete(request: Request, response: Response): Promise<Response> {
-    const schema = Yup.object().shape({
-      id: Yup.number().required(),
-    });
-    if (!(await schema.isValid(request.params))) {
-      return response.json({
-        error: 'Falha na validação',
-        statusCode: 400,
+    try {
+      const schema = Yup.object().shape({
+        id: Yup.number().required(),
       });
+      if (!(await schema.isValid(request.params))) {
+        throw new Error('Falha na validação');
+      }
+
+      const teamsRepository = new TeamsRepository();
+      const { id } = request.params;
+      const checkTeamExists = await teamsRepository.findById(Number(id));
+
+      if (!checkTeamExists) {
+        throw new Error('Id equipe informado não encontrado.');
+      }
+      await teamsRepository.delete(Number(id));
+
+      return response.json(
+        new ResponseSuccess({
+          message: 'Equipe deletada com sucesso',
+        }),
+      );
+    } catch (error) {
+      return response.json(
+        new AppError(
+          'Falha ao tentar deletar uma equipe',
+          (error as Error).message,
+        ),
+      );
     }
-
-    const teamsRepository = new TeamsRepository();
-    const { id } = request.params;
-    const checkTeamExists = await teamsRepository.findById(Number(id));
-
-    if (!checkTeamExists) {
-      throw new AppError('Id do tipo de mercadoria informado não encontrado.');
-    }
-    await teamsRepository.delete(Number(id));
-
-    return response.json({
-      message: 'Equipe deletada com sucesso',
-    });
   }
 }

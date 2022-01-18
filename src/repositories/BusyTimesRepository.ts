@@ -2,8 +2,6 @@ import { getMongoRepository, MongoRepository, ObjectID } from 'typeorm';
 
 import AppError from 'errors/AppError';
 import ICreateBusyTimesDTO from './types/dtos/ICreateBusyTimesDTO';
-import IListAppointmentsDTO from './types/dtos/IListAppointmentsDTO';
-import IListBusyTimeByTeamDTO from './types/dtos/IListBusyTimeByTeamDTO';
 
 import IBusyTimesRepository from './types/IBusyTimesRepository';
 
@@ -81,11 +79,11 @@ class BusyTimesRepository implements IBusyTimesRepository {
         },
       );
       if (!busyTimeUpdated) {
-        throw new AppError('Não foi possível realizar o update', 401);
+        throw new Error('Não foi possível realizar o update');
       }
       return true;
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 }

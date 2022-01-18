@@ -1,7 +1,5 @@
 import { getMongoRepository, MongoRepository, ObjectID } from 'typeorm';
 
-import AppError from 'errors/AppError';
-
 import IAppointmentStatusRepository from './types/IAppointmentStatusRepository';
 
 import AppointmentStatus from '../models/schemas/AppointmentStatus';
@@ -57,11 +55,11 @@ class AppointmentStatusRepository implements IAppointmentStatusRepository {
         },
       );
       if (!appointmentStatusUpdated) {
-        throw new AppError('Não foi possível realizar o update', 401);
+        throw new Error('Não foi possível realizar o update');
       }
       return true;
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 }

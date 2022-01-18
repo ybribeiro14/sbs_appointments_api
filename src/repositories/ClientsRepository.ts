@@ -1,6 +1,5 @@
 import { getRepository, Repository } from 'typeorm';
 
-import AppError from 'errors/AppError';
 import ICreateClientDTO from './types/dtos/ICreateClientDTO';
 import IClientsRepository from './types/IClientsRepository';
 
@@ -23,7 +22,7 @@ class ClientsRepository implements IClientsRepository {
 
       return findClient;
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -33,7 +32,7 @@ class ClientsRepository implements IClientsRepository {
 
       return findClient;
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -45,7 +44,7 @@ class ClientsRepository implements IClientsRepository {
 
       return client;
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -53,7 +52,7 @@ class ClientsRepository implements IClientsRepository {
     try {
       return this.ormRepository.save(client);
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -65,7 +64,7 @@ class ClientsRepository implements IClientsRepository {
         },
       });
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -80,11 +79,11 @@ class ClientsRepository implements IClientsRepository {
         },
       );
       if (!clientUpdated) {
-        throw new AppError('Não foi possível realizar o update', 401);
+        throw new Error('Não foi possível realizar o update');
       }
       return true;
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -95,7 +94,7 @@ class ClientsRepository implements IClientsRepository {
       });
       return true;
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 }

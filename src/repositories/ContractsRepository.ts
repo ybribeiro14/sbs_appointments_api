@@ -1,6 +1,5 @@
 import { getRepository, Repository } from 'typeorm';
 
-import AppError from 'errors/AppError';
 import ICreateContractDTO from './types/dtos/ICreateContractDTO';
 import IContractsRepository from './types/IContractsRepository';
 
@@ -25,7 +24,7 @@ class ContractsRepository implements IContractsRepository {
 
       return findContract;
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -35,7 +34,7 @@ class ContractsRepository implements IContractsRepository {
 
       return findContract;
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -47,7 +46,7 @@ class ContractsRepository implements IContractsRepository {
 
       return contract;
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -55,7 +54,7 @@ class ContractsRepository implements IContractsRepository {
     try {
       return this.ormRepository.save(contract);
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -63,7 +62,7 @@ class ContractsRepository implements IContractsRepository {
     try {
       return this.ormRepository.find();
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -74,7 +73,7 @@ class ContractsRepository implements IContractsRepository {
       });
       return true;
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 }
