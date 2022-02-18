@@ -91,7 +91,10 @@ export default class ClientsController {
         throw new Error('ID cliente informado não encontrado.');
       }
 
-      await clientsRepository.update(request.body);
+      await clientsRepository.update({
+        id: Number(id),
+        ...request.body,
+      });
 
       return response.json(
         new ResponseSuccess({

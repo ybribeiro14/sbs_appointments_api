@@ -100,8 +100,9 @@ export default class CommodityTypesController {
       }
 
       await commodityTypesRepository.update({
-        id: Number(id),
         ...request.body,
+        id: Number(id),
+        average_operating_time: request.body.average_operating_time / 60,
       });
 
       return response.json(

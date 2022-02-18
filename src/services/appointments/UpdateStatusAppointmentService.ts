@@ -15,7 +15,10 @@ import { io } from '../../http';
 interface IRequest {
   appointment_id: number;
   statusId: number;
-  userLogin: string;
+  user: {
+    login: string;
+    id: number;
+  };
 }
 
 interface IResponse {
@@ -42,17 +45,20 @@ class UpdateStatusAppointmentService {
   public async execute({
     appointment_id,
     statusId,
-    userLogin,
+    user,
   }: IRequest): Promise<IResponse[]> {
     const appointment = await this.appointmentsRepository.findById(
       appointment_id,
     );
 
     if (!appointment) {
-      throw new AppError('Agendamento informado não existe.');
+      throw new Error('Agendamento informado não existe.');
     }
 
     const previousStatus = appointment.status_id;
+
+    let checker_id;
+
     let typeNewStatus: IStatusObject | undefined;
     if (appointment.module === 'loading_module') {
       const statusLoadindModule: IStatusObject[] = Object.values(
@@ -62,21 +68,22 @@ class UpdateStatusAppointmentService {
       switch (statusId) {
         case enum_status_loadind_module.TRUCK_ARRIVED.id:
           if (previousStatus !== enum_status_loadind_module.SCHEDULED.id) {
-            throw new AppError(
+            throw new Error(
               'Status atual não permite alterar para o status informado.',
             );
           }
           break;
         case enum_status_loadind_module.TRUCK_ENTERED.id:
           if (previousStatus !== enum_status_loadind_module.TRUCK_ARRIVED.id) {
-            throw new AppError(
+            throw new Error(
               'Status atual não permite alterar para o status informado.',
             );
           }
           break;
         case enum_status_loadind_module.LOADING_STARTED.id:
+          checker_id = user.id;
           if (previousStatus !== enum_status_loadind_module.TRUCK_ENTERED.id) {
-            throw new AppError(
+            throw new Error(
               'Status atual não permite alterar para o status informado.',
             );
           }
@@ -85,7 +92,7 @@ class UpdateStatusAppointmentService {
           if (
             previousStatus !== enum_status_loadind_module.LOADING_STARTED.id
           ) {
-            throw new AppError(
+            throw new Error(
               'Status atual não permite alterar para o status informado.',
             );
           }
@@ -94,17 +101,16 @@ class UpdateStatusAppointmentService {
           if (
             previousStatus !== enum_status_loadind_module.FINISHED_LOADING.id
           ) {
-            throw new AppError(
+            throw new Error(
               'Status atual não permite alterar para o status informado.',
             );
           }
           break;
         case enum_status_loadind_module.CANCELED.id:
-          throw new AppError('Agendamento cancelado não permite alteração.');
+          throw new Error('Agendamento cancelado não permite alteração.');
 
-          break;
         default:
-          throw new AppError('Status informado não existe.');
+          throw new Error('Status informado não existe.');
       }
     } else {
       const statusSpawnModule: IStatusObject[] = Object.values(
@@ -114,25 +120,26 @@ class UpdateStatusAppointmentService {
 
       switch (statusId) {
         case enum_status_spawn_module.SPAWN_STARTED.id:
+          checker_id = user.id;
+
           if (previousStatus !== enum_status_spawn_module.SCHEDULED.id) {
-            throw new AppError(
+            throw new Error(
               'Status atual não permite alterar para o status informado.',
             );
           }
           break;
         case enum_status_spawn_module.FINISHED_SPAWN.id:
           if (previousStatus !== enum_status_spawn_module.SPAWN_STARTED.id) {
-            throw new AppError(
+            throw new Error(
               'Status atual não permite alterar para o status informado.',
             );
           }
           break;
         case enum_status_spawn_module.CANCELED.id:
-          throw new AppError('Agendamento cancelado não permite alteração.');
+          throw new Error('Agendamento cancelado não permite alteração.');
 
-          break;
         default:
-          throw new AppError('Status informado não existe.');
+          throw new Error('Status informado não existe.');
       }
     }
 
@@ -145,7 +152,7 @@ class UpdateStatusAppointmentService {
     );
 
     if (!hashStatus) {
-      throw new AppError(
+      throw new Error(
         'Não foi possível realizar a atualização de Status. Hash não encontrado',
       );
     }
@@ -157,7 +164,7 @@ class UpdateStatusAppointmentService {
       status: typeNewStatus?.type,
       timestamp: getTime(dateStatus),
       date_formated: format(dateStatus, 'dd/MM/yyyy HH:mm'),
-      user: userLogin,
+      user: user.login,
     };
     statusHistory.push(status);
 
@@ -168,7 +175,11 @@ class UpdateStatusAppointmentService {
 
     // Atualizar status na tabela;
 
-    await this.appointmentsRepository.updateStatus(appointment.id, statusId);
+    await this.appointmentsRepository.updateStatus(
+      appointment.id,
+      statusId,
+      checker_id,
+    );
 
     io.to(`loading_module_${appointment.contract_id}`).emit(
       'update_appointment',

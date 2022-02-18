@@ -12,7 +12,7 @@ export default class SessionsController {
 
       const authenticateUser = container.resolve(AuthenticateUserService);
 
-      const { user, token } = await authenticateUser.execute({
+      const { user, token, contract } = await authenticateUser.execute({
         login,
         password,
         contract_id,
@@ -30,12 +30,12 @@ export default class SessionsController {
         inventory_module: user.inventory_module,
         painel_adm: user.painel_adm,
         concierge: user.concierge,
-        lecturer: user.lecturer,
+        checker: user.checker,
         supervisor: user.supervisor,
       };
 
       return response.json(
-        new ResponseSuccess({ user: userWithoutPassword, token }),
+        new ResponseSuccess({ user: userWithoutPassword, token, contract }),
       );
     } catch (error) {
       return response.json(

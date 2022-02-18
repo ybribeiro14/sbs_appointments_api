@@ -77,8 +77,14 @@ class CreateAppointmentService {
     const teamsRepository = new TeamsRepository();
 
     const checkTeam = await teamsRepository.findById(team_id);
-    if (!checkTeam || !checkTeam.enable) {
-      throw new Error('Equipe informada não está habilitada ou não existe');
+    if (!checkTeam) {
+      throw new Error('Equipe informada não existe');
+    }
+
+    if (module === 'loading_module' && !checkTeam.loading_module) {
+      throw new Error('Equipe informada não está habilitada para carregamento');
+    } else if (module === 'spawn_module' && !checkTeam.spawn_module) {
+      throw new Error('Equipe informada não está habilitada para desova');
     }
 
     // verificar se o cliente existe;

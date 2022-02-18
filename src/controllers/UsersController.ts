@@ -4,6 +4,8 @@ import { container } from 'tsyringe';
 
 import AppError from 'errors/AppError';
 import ResponseSuccess from 'libs/responseSuccess';
+import AppointmentsRepository from 'repositories/AppointmentsRepository';
+import { hash } from 'bcryptjs';
 import CreateUserService from '../services/users/CreateUserService';
 import UsersRepository from '../repositories/UsersRepository';
 
@@ -16,7 +18,7 @@ export default class UsersController {
         password: Yup.string().required(),
         painel_adm: Yup.boolean().required(),
         concierge: Yup.boolean().required(),
-        lecturer: Yup.boolean().required(),
+        checker: Yup.boolean().required(),
         supervisor: Yup.boolean().required(),
         spawn_module: Yup.boolean().required(),
         loading_module: Yup.boolean().required(),
@@ -42,7 +44,7 @@ export default class UsersController {
         inventory_module,
         painel_adm,
         concierge,
-        lecturer,
+        checker,
         supervisor,
       } = request.body;
 
@@ -59,7 +61,7 @@ export default class UsersController {
         inventory_module,
         painel_adm,
         concierge,
-        lecturer,
+        checker,
         supervisor,
       });
 
@@ -76,7 +78,7 @@ export default class UsersController {
         inventory_module: user.inventory_module,
         painel_adm: user.painel_adm,
         concierge: user.concierge,
-        lecturer: user.lecturer,
+        checker: user.checker,
         supervisor: user.supervisor,
       };
 
@@ -127,8 +129,15 @@ export default class UsersController {
       if (!checkUserExists) {
         throw new Error('Id usuário informado não encontrado.');
       }
+      let hashedPassword;
+      if (request.body.password !== '') {
+        hashedPassword = await hash(request.body.password, 8);
+      }
 
-      await usersRepository.update(Number(id), request.body);
+      await usersRepository.update(Number(id), {
+        ...request.body,
+        password: hashedPassword,
+      });
 
       return response.json(
         new ResponseSuccess({
@@ -154,6 +163,10 @@ export default class UsersController {
         throw new Error('Falha na validação');
       }
 
+      const user = JSON.parse(request.user.id);
+
+      const { contract_id } = user;
+
       const usersRepository = new UsersRepository();
       const { id } = request.params;
       const checkUserExists = await usersRepository.findById(Number(id));
@@ -161,6 +174,22 @@ export default class UsersController {
       if (!checkUserExists) {
         throw new Error('Id usuário informado não encontrado.');
       }
+
+      if (checkUserExists.checker) {
+        const appoitmentsRepository = new AppointmentsRepository();
+
+        const checkUserWithAppointmentActive = await appoitmentsRepository.checkAppointmentByUser(
+          Number(id),
+          contract_id,
+        );
+
+        if (checkUserWithAppointmentActive) {
+          throw new Error(
+            'Não é permitido excluir conferente com agendamento em aberto.',
+          );
+        }
+      }
+
       await usersRepository.delete(Number(id));
 
       return response.json(

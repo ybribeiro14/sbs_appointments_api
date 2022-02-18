@@ -245,7 +245,10 @@ export default class AppointmentsController {
         {
           appointment_id: Number(appointmentId),
           statusId: Number(statusId),
-          userLogin,
+          user: {
+            id: user.id,
+            login: userLogin,
+          },
         },
       );
 

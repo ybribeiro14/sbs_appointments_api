@@ -18,7 +18,11 @@ export default class CreateTeams1626118060806 implements MigrationInterface {
             type: 'varchar',
           },
           {
-            name: 'enable',
+            name: 'loading_module',
+            type: 'boolean',
+          },
+          {
+            name: 'spawn_module',
             type: 'boolean',
           },
           {

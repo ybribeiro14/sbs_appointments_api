@@ -36,7 +36,7 @@ class Users {
   painel_adm: boolean;
 
   @Column()
-  lecturer: boolean;
+  checker: boolean;
 
   @Column()
   concierge: boolean;

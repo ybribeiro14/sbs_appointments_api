@@ -51,11 +51,11 @@ class CancelAppointmentService {
     );
 
     if (!appointment) {
-      throw new AppError('Agendamento informado não existe.');
+      throw new Error('Agendamento informado não existe.');
     }
 
     if (appointment.status_id === 6) {
-      throw new AppError('Agendamento informado já está cancelado.');
+      throw new Error('Agendamento informado já está cancelado.');
     }
 
     switch (appointment.module) {
@@ -64,7 +64,7 @@ class CancelAppointmentService {
           appointment.status_id ===
           enum_status_loadind_module.TRUCK_DISPATCHED.id
         ) {
-          throw new AppError(
+          throw new Error(
             'Não é permitido cancelar um agendamento com este status.',
           );
         }
@@ -73,7 +73,7 @@ class CancelAppointmentService {
         if (
           appointment.status_id === enum_status_spawn_module.FINISHED_SPAWN.id
         ) {
-          throw new AppError(
+          throw new Error(
             'Não é permitido cancelar um agendamento com este status.',
           );
         }
@@ -90,7 +90,7 @@ class CancelAppointmentService {
     );
 
     if (!hashStatus) {
-      throw new AppError(
+      throw new Error(
         'Não foi possível cancelar esta Agenda. Hash não encontrado',
       );
     }
