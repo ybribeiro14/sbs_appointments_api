@@ -53,6 +53,11 @@ class Appointments {
   @Column()
   grid_index: number;
 
+  @Column({
+    nullable: true,
+  })
+  checker_id: number;
+
   @CreateDateColumn()
   created_at: Date;
 

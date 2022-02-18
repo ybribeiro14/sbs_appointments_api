@@ -47,7 +47,7 @@ export default class CreateUsers1597415411458 implements MigrationInterface {
             type: 'boolean',
           },
           {
-            name: 'lecturer',
+            name: 'checker',
             type: 'boolean',
           },
           {

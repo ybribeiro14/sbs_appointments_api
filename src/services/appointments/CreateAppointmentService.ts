@@ -10,7 +10,6 @@ import checkTimeAvailable from 'libs/checkTimeAvailable';
 import Clients from 'models/entities/Clients';
 import CommodityTypes from 'models/entities/CommodityTypes';
 import { IStatusHistory } from 'interfaces/statusHistory';
-import AppError from '../../errors/AppError';
 
 import Appointments from '../../models/entities/Appointments';
 import IAppointmentsRepository from '../../repositories/types/IAppointmentsRepository';
@@ -70,7 +69,7 @@ class CreateAppointmentService {
 
     // Verificar se é data que já passou
     if (isBefore(parsedDateTime, new Date())) {
-      throw new AppError('Past dates are not permitted');
+      throw new Error('Data informada não permitida.');
     }
 
     // verificar se o time está habilitado;
@@ -78,8 +77,14 @@ class CreateAppointmentService {
     const teamsRepository = new TeamsRepository();
 
     const checkTeam = await teamsRepository.findById(team_id);
-    if (!checkTeam || !checkTeam.enable) {
-      throw new AppError('Equipe informada não está habilitada ou não existe');
+    if (!checkTeam) {
+      throw new Error('Equipe informada não existe');
+    }
+
+    if (module === 'loading_module' && !checkTeam.loading_module) {
+      throw new Error('Equipe informada não está habilitada para carregamento');
+    } else if (module === 'spawn_module' && !checkTeam.spawn_module) {
+      throw new Error('Equipe informada não está habilitada para desova');
     }
 
     // verificar se o cliente existe;
@@ -88,7 +93,7 @@ class CreateAppointmentService {
 
     const checkClient = await clientsRepository.findById(client_id);
     if (!checkClient) {
-      throw new AppError('Cliente informado não existe!');
+      throw new Error('Cliente informado não existe!');
     }
 
     const { grids, commodityType } = await calculateGridIndex({
@@ -110,7 +115,7 @@ class CreateAppointmentService {
     });
 
     if (!checkTime.busyTimes.length) {
-      throw new AppError('Não foi possível gerar este agendamento.');
+      throw new Error('Não foi possível gerar este agendamento.');
     }
 
     const lastCode = await this.appointmentsRepository.findLastCode(
@@ -148,7 +153,6 @@ class CreateAppointmentService {
       grid_index: grids,
       code,
     });
-
     if (checkTime.idBusyTimes) {
       const busyUpdated = await busyTimesRepository.update(
         checkTime.idBusyTimes,
@@ -156,7 +160,7 @@ class CreateAppointmentService {
       );
 
       if (!busyUpdated) {
-        throw new AppError(
+        throw new Error(
           'Erro ao tentar atualizar a lista de horários ocupados.',
         );
       }

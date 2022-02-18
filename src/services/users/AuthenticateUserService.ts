@@ -3,6 +3,8 @@ import { injectable, inject } from 'tsyringe';
 
 import authConfig from '@config/auth';
 
+import ContractsRepository from 'repositories/ContractsRepository';
+import Contracts from 'models/entities/Contracts';
 import AppError from '../../errors/AppError';
 
 import User from '../../models/entities/User';
@@ -18,6 +20,7 @@ interface IRequest {
 interface IResponse {
   user: User;
   token: string;
+  contract: Contracts;
 }
 
 @injectable()
@@ -35,10 +38,17 @@ class AuthenticateUserService {
     password,
     contract_id,
   }: IRequest): Promise<IResponse> {
+    const contractsRepository = new ContractsRepository();
+
+    const contract = await contractsRepository.findById(contract_id);
+    if (!contract) {
+      throw new Error('Contrato informado não possui cadastro.');
+    }
+
     const user = await this.usersRepository.findByLogin(login, contract_id);
 
     if (!user) {
-      throw new AppError('Combinação contrato/login/senha incorreta.');
+      throw new Error('Combinação contrato/login/senha incorreta.');
     }
 
     const passwordMatched = await this.hashProvider.compareHash(
@@ -47,7 +57,7 @@ class AuthenticateUserService {
     );
 
     if (!passwordMatched) {
-      throw new AppError('Combinação contrato/login/senha incorreta.');
+      throw new Error('Combinação contrato/login/senha incorreta.');
     }
 
     const { expiresIn, secret } = authConfig.jwt;
@@ -61,7 +71,7 @@ class AuthenticateUserService {
       expiresIn,
     });
 
-    return { user, token };
+    return { user, token, contract };
   }
 }
 

@@ -1,6 +1,5 @@
-import { Between, getRepository, Repository } from 'typeorm';
+import { Between, getRepository, In, Repository } from 'typeorm';
 
-import AppError from 'errors/AppError';
 import ICreateAppointmentsDTO from './types/dtos/ICreateAppointmentsDTO';
 import IListAppointmentsDTO from './types/dtos/IListAppointmentsDTO';
 import IAppointmentsRepository from './types/IAppointmentsRepository';
@@ -23,16 +22,13 @@ class AppointmentsRepository implements IAppointmentsRepository {
   public async findByDate(
     data: IListAppointmentsDTO,
   ): Promise<Appointments[] | undefined> {
-    const findAppointments = await this.ormRepository.find({
-      where: {
-        date: Between(`${data.date} 00:00`, `${data.date} 23:59`),
-        contract_id: data.contract_id,
-        module: data.module,
-      },
-      order: {
-        date: 'ASC',
-      },
-    });
+    const findAppointments = await this.ormRepository.manager.query(`
+    SELECT AP.*, US.name as checker_name FROM appointments AS AP left join users US on AP.checker_id = US.id
+    WHERE AP.date between '${data.date} 00:00' and  '${data.date} 23:59'
+    AND AP.contract_id = ${data.contract_id}
+    AND module = '${data.module}'
+    AND status_id != 6;
+`);
 
     return findAppointments;
   }
@@ -96,7 +92,11 @@ class AppointmentsRepository implements IAppointmentsRepository {
     return appointment;
   }
 
-  public async updateStatus(id: number, statusId: number): Promise<boolean> {
+  public async updateStatus(
+    id: number,
+    statusId: number,
+    user_id: number | undefined = undefined,
+  ): Promise<boolean> {
     try {
       const clientUpdated = await this.ormRepository.update(
         {
@@ -104,14 +104,15 @@ class AppointmentsRepository implements IAppointmentsRepository {
         },
         {
           status_id: statusId,
+          checker_id: user_id,
         },
       );
       if (!clientUpdated) {
-        throw new AppError('Não foi possível realizar o update de status', 401);
+        throw new Error('Não foi possível realizar o update de status');
       }
       return true;
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
     }
   }
 
@@ -129,11 +130,54 @@ class AppointmentsRepository implements IAppointmentsRepository {
         },
       );
       if (!clientUpdated) {
-        throw new AppError('Não foi possível realizar o update de status', 401);
+        throw new Error('Não foi possível realizar o update de status');
       }
       return dataUpdate;
     } catch (error) {
-      throw new AppError(error.message);
+      throw new Error((error as Error).message);
+    }
+  }
+
+  public async checkStatusByTeam(
+    team_id: number,
+    contract_id: number,
+    module: string,
+  ): Promise<Appointments[]> {
+    try {
+      let status = [0, 1, 2, 3, 4];
+
+      if (module === 'spawn_module') {
+        status = [0, 3];
+      }
+      const checkTeamStatus = await this.ormRepository.find({
+        where: {
+          contract_id,
+          team_id,
+          module,
+          status_id: In(status),
+        },
+      });
+      return checkTeamStatus;
+    } catch (error) {
+      throw new Error((error as Error).message);
+    }
+  }
+
+  public async checkAppointmentByUser(
+    checker_id: number,
+    contract_id: number,
+  ): Promise<Appointments[]> {
+    try {
+      const checkUserWithAppointmentActive = await this.ormRepository.find({
+        where: {
+          contract_id,
+          checker_id,
+          status_id: 3,
+        },
+      });
+      return checkUserWithAppointmentActive;
+    } catch (error) {
+      throw new Error((error as Error).message);
     }
   }
 }

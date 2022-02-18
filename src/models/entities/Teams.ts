@@ -15,10 +15,13 @@ class Teams {
   name: string;
 
   @Column()
-  enable: boolean;
+  contract_id: number;
 
   @Column()
-  contract_id: number;
+  spawn_module: boolean;
+
+  @Column()
+  loading_module: boolean;
 
   @CreateDateColumn()
   created_at: Date;

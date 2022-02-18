@@ -1,7 +1,6 @@
 import { injectable, inject } from 'tsyringe';
 
 import validadeContract from 'libs/validateContract';
-import AppError from '../../errors/AppError';
 
 import User from '../../models/entities/User';
 import IUsersRepository from '../../repositories/types/IUsersRepository';
@@ -18,7 +17,7 @@ interface IRequest {
   inventory_module: boolean;
   painel_adm: boolean;
   concierge: boolean;
-  lecturer: boolean;
+  checker: boolean;
   supervisor: boolean;
 }
 
@@ -43,7 +42,7 @@ class CreateUserService {
     inventory_module,
     painel_adm,
     concierge,
-    lecturer,
+    checker,
     supervisor,
   }: IRequest): Promise<User> {
     await validadeContract(contract_id);
@@ -54,7 +53,7 @@ class CreateUserService {
     );
 
     if (checkUserExists) {
-      throw new AppError('Login address already used.');
+      throw new Error('Login informado já possui cadastro.');
     }
 
     const hashedPassword = await this.hashProvider.generateHash(password);
@@ -70,7 +69,7 @@ class CreateUserService {
       inventory_module,
       painel_adm,
       concierge,
-      lecturer,
+      checker,
       supervisor,
     });
 
