@@ -5,6 +5,12 @@ import ITeamsRepository from './types/ITeamsRepository';
 
 import Teams from '../models/entities/Teams';
 
+interface IWhereConditionsProps {
+  contract_id: number;
+  loading_module?: boolean;
+  spawn_module?: boolean;
+}
+
 class TeamsRepository implements ITeamsRepository {
   private ormRepository: Repository<Teams>;
 
@@ -30,13 +36,22 @@ class TeamsRepository implements ITeamsRepository {
     }
   }
 
-  public async findEnebled(contract_id: number): Promise<Teams[] | undefined> {
+  public async findEnebled(
+    contract_id: number,
+    module: string,
+  ): Promise<Teams[] | undefined> {
     try {
+      const whereConditions: IWhereConditionsProps = {
+        contract_id,
+      };
+      if (module === 'loading_module') {
+        whereConditions.loading_module = true;
+      }
+      if (module === 'spawn_module') {
+        whereConditions.spawn_module = true;
+      }
       const findTeams = await this.ormRepository.find({
-        where: {
-          enable: true,
-          contract_id,
-        },
+        where: whereConditions,
       });
 
       return findTeams;
@@ -94,7 +109,8 @@ class TeamsRepository implements ITeamsRepository {
           id: teams.id,
         },
         {
-          enable: teams.enable,
+          loading_module: teams.loading_module,
+          spawn_module: teams.spawn_module,
         },
       );
       if (!teamsUpdated) {

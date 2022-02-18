@@ -1,5 +1,6 @@
 export default interface ICreateTeamsDTO {
   name: string;
-  enable: boolean;
+  loading_module: boolean;
+  spawn_module: boolean;
   contract_id: number;
 }

@@ -41,25 +41,24 @@ class UpdateDataAppointmentService {
       appointment_id,
     );
     if (!appointment) {
-      throw new AppError('Agendamento informado não existe.');
+      throw new Error('Agendamento informado não existe.');
     }
 
     if (appointment.status_id === 6) {
-      throw new AppError(
+      throw new Error(
         'Não é permitido alterar um agendamento que já está cancelado.',
       );
     }
     // agendamento já iniciado
     if (appointment.status_id >= 3) {
-      throw new AppError(
+      throw new Error(
         'Não é permitido alterar um agendamento que já foi iniciado.',
       );
     }
-
     if (data.date) {
       // Verificar se é data que já passou
       if (isBefore(data.date, new Date())) {
-        throw new AppError('Past dates are not permitted');
+        throw new Error('Data informada já passou!');
       }
     }
     let checkBusyTimes = false;
@@ -121,7 +120,7 @@ class UpdateDataAppointmentService {
         );
 
         if (!busyUpdatedOld) {
-          throw new AppError(
+          throw new Error(
             'Erro ao tentar atualizar a lista de horários ocupados anteriores.',
           );
         }
@@ -137,7 +136,7 @@ class UpdateDataAppointmentService {
       });
 
       if (!checkTime.busyTimes.length) {
-        throw new AppError('Não foi possível alterar este agendamento.');
+        throw new Error('Não foi possível alterar este agendamento.');
       }
       newBusyTimes = checkTime.busyTimes;
       idBusyTimes = checkTime.idBusyTimes;
@@ -157,7 +156,7 @@ class UpdateDataAppointmentService {
       );
 
       if (!busyUpdated) {
-        throw new AppError(
+        throw new Error(
           'Erro ao tentar atualizar a lista de horários ocupados.',
         );
       }

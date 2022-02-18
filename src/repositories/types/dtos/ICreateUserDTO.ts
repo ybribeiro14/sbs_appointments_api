@@ -9,6 +9,6 @@ export default interface ICreateUserDTO {
   inventory_module: boolean;
   painel_adm: boolean;
   concierge: boolean;
-  lecturer: boolean;
+  checker: boolean;
   supervisor: boolean;
 }

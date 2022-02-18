@@ -75,6 +75,10 @@ export default class CreateAppointments1625773202592
             type: 'int',
           },
           {
+            name: 'user_id',
+            type: 'int',
+          },
+          {
             name: 'created_at',
             type: 'timestamp',
             default: 'now()',

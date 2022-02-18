@@ -2,6 +2,7 @@ import AppError from 'errors/AppError';
 import { Request, Response } from 'express';
 import ResponseSuccess from 'libs/responseSuccess';
 import validadeContract from 'libs/validateContract';
+import AppointmentsRepository from 'repositories/AppointmentsRepository';
 import * as Yup from 'yup';
 
 import TeamsRepository from '../repositories/TeamsRepository';
@@ -11,6 +12,8 @@ export default class TeamsController {
     try {
       const schema = Yup.object().shape({
         name: Yup.string().required(),
+        loading_module: Yup.boolean().required(),
+        spawn_module: Yup.boolean().required(),
       });
       if (!(await schema.isValid(request.body))) {
         throw new Error('Falha na validação');
@@ -36,8 +39,7 @@ export default class TeamsController {
       }
 
       const team = await teamsRepository.create({
-        name,
-        enable: true,
+        ...request.body,
         contract_id,
       });
 
@@ -76,15 +78,22 @@ export default class TeamsController {
     try {
       const paramsValidation = {
         id: request.params.id,
-        enable: request.body.enable,
+        loading_module: request.body.loading_module,
+        spawn_module: request.body.spawn_module,
       };
       const schema = Yup.object().shape({
         id: Yup.number().required(),
-        enable: Yup.boolean().required(),
+        loading_module: Yup.boolean().required(),
+        spawn_module: Yup.boolean().required(),
       });
       if (!(await schema.isValid(paramsValidation))) {
         throw new Error('Falha na validação');
       }
+      const user = JSON.parse(request.user.id);
+
+      const { contract_id } = user;
+
+      await validadeContract(contract_id);
 
       const teamsRepository = new TeamsRepository();
       const { id } = request.params;
@@ -92,6 +101,36 @@ export default class TeamsController {
 
       if (!checkTeamExists) {
         throw new Error('ID da equipe informado não foi encontrado.');
+      }
+      const appoitmentsRepository = new AppointmentsRepository();
+
+      if (!request.body.loading_module) {
+        const checkTeamAppointmentEnable = await appoitmentsRepository.checkStatusByTeam(
+          Number(id),
+          contract_id,
+          'loading_module',
+        );
+
+        console.log(checkTeamAppointmentEnable);
+
+        if (checkTeamAppointmentEnable.length) {
+          throw new Error(
+            'Não é permitido desabilitar essa equipe por que ela possui um carregamento em aberto.',
+          );
+        }
+      }
+      if (!request.body.spawn_module) {
+        const checkTeamAppointmentEnable = await appoitmentsRepository.checkStatusByTeam(
+          Number(id),
+          contract_id,
+          'spawn_module',
+        );
+
+        if (checkTeamAppointmentEnable.length) {
+          throw new Error(
+            'Não é permitido desabilitar essa equipe por que ela possui uma desova em aberto.',
+          );
+        }
       }
 
       await teamsRepository.update({
@@ -101,7 +140,7 @@ export default class TeamsController {
 
       return response.json(
         new ResponseSuccess({
-          message: 'Equipe atualizado com sucesso',
+          message: 'Equipe atualizada com sucesso',
         }),
       );
     } catch (error) {

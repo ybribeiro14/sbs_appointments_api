@@ -62,7 +62,7 @@ class ListAppointmentService {
       parsedDate,
     );
 
-    const teamsEnebled = await teamsRepository.findEnebled(contract_id);
+    const teamsEnebled = await teamsRepository.findEnebled(contract_id, module);
     if (teamsEnebled?.length) {
       teamsEnebled.forEach(async team => {
         const busyTimeFind = busyTimesHash?.find(
@@ -80,7 +80,7 @@ class ListAppointmentService {
         }
       });
     } else {
-      throw new AppError(
+      throw new Error(
         'Não existe nenhuma equipe habilitada para este contrato',
       );
     }
