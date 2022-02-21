@@ -1,8 +1,7 @@
-import { addMinutes, format, getTime, isAfter, parseISO } from 'date-fns';
+import { addMinutes, format, getTime, parseISO } from 'date-fns';
 import { injectable, inject } from 'tsyringe';
 
-import AppError from 'errors/AppError';
-import BusyTimesRepository from 'repositories/BusyTimesRepository';
+import BusyTimesRepository from '../../repositories/BusyTimesRepository';
 import {
   enum_status_loadind_module,
   enum_status_spawn_module,
@@ -15,7 +14,7 @@ import AppointmentsStatusRepository from '../../repositories/AppointmentsStatusR
 interface IRequest {
   appointment_id: number;
   justify: string;
-  userLogin: string;
+  userId: number;
   contract_id: number;
 }
 
@@ -43,7 +42,7 @@ class CancelAppointmentService {
   public async execute({
     appointment_id,
     justify,
-    userLogin,
+    userId,
     contract_id,
   }: IRequest): Promise<IResponse[]> {
     const appointment = await this.appointmentsRepository.findById(
@@ -102,14 +101,14 @@ class CancelAppointmentService {
       status: 'canceled',
       timestamp: getTime(dateStatus),
       date_formated: format(dateStatus, 'dd/MM/yyyy HH:mm'),
-      user: userLogin,
+      user: userId,
       justify,
     };
     statusHistory.push(status);
 
     // Atualizar status na tabela;
 
-    await this.appointmentsRepository.updateStatus(appointment.id, 6);
+    await this.appointmentsRepository.updateStatus(appointment.id, 6, userId);
 
     // Atualizar hash de status da agenda (mongoDB);
 

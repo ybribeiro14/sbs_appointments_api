@@ -1,5 +1,5 @@
-import BusyTimesRepository from 'repositories/BusyTimesRepository';
 import { ObjectID } from 'typeorm';
+import BusyTimesRepository from '../repositories/BusyTimesRepository';
 
 interface IParamsCheckTimeAvailable {
   contract_id: number;

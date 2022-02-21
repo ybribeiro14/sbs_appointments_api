@@ -1,4 +1,4 @@
-import CommodityTypes from '../../models/CommodityTypes';
+import CommodityTypes from '../../models/entities/CommodityTypes';
 import ICreateCommodityTypeDTO from './dtos/ICreateCommodityTypeDTO';
 
 export default interface ICommodityTypesRepository {

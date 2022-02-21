@@ -1,7 +1,6 @@
 import { format, getTime } from 'date-fns';
 import { injectable, inject } from 'tsyringe';
 
-import AppError from 'errors/AppError';
 import {
   enum_status_loadind_module,
   enum_status_spawn_module,

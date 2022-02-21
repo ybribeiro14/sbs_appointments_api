@@ -1,7 +1,7 @@
-import AppError from 'errors/AppError';
 import { Request, Response } from 'express';
-import ResponseSuccess from 'libs/responseSuccess';
 import * as Yup from 'yup';
+import ResponseSuccess from '../libs/responseSuccess';
+import AppError from '../errors/AppError';
 
 import ContractsRepository from '../repositories/ContractsRepository';
 

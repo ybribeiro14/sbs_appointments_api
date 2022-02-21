@@ -1,6 +1,5 @@
 import { getMongoRepository, MongoRepository, ObjectID } from 'typeorm';
 
-import AppError from 'errors/AppError';
 import ICreateBusyTimesDTO from './types/dtos/ICreateBusyTimesDTO';
 
 import IBusyTimesRepository from './types/IBusyTimesRepository';

@@ -1,11 +1,10 @@
 import { sign } from 'jsonwebtoken';
 import { injectable, inject } from 'tsyringe';
 
-import authConfig from '@config/auth';
+import authConfig from '../../config/auth';
 
-import ContractsRepository from 'repositories/ContractsRepository';
-import Contracts from 'models/entities/Contracts';
-import AppError from '../../errors/AppError';
+import Contracts from '../../models/entities/Contracts';
+import ContractsRepository from '../../repositories/ContractsRepository';
 
 import User from '../../models/entities/User';
 import IUsersRepository from '../../repositories/types/IUsersRepository';

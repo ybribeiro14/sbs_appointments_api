@@ -1,5 +1,5 @@
-import CommodityTypes from 'models/entities/CommodityTypes';
-import CommodityTypesRepository from 'repositories/CommodityTypesRepository';
+import CommodityTypes from '../models/entities/CommodityTypes';
+import CommodityTypesRepository from '../repositories/CommodityTypesRepository';
 
 interface IParamsCalculateGrid {
   commodity_types_id: number;
