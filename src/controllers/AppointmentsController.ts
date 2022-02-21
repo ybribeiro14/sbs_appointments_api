@@ -1,15 +1,15 @@
 import { Request, Response } from 'express';
-import validadeContract from 'libs/validateContract';
 import { container } from 'tsyringe';
 import * as Yup from 'yup';
 import { addMinutes, format, parseISO } from 'date-fns';
+import validadeContract from '../libs/validateContract';
 
-import UpdateStatusAppointmentService from 'services/appointments/UpdateStatusAppointmentService';
-import UpdateDataAppointmentService from 'services/appointments/UpdateDataAppointmentService';
-import BusyTimesRepository from 'repositories/BusyTimesRepository';
-import AppError from 'errors/AppError';
-import TeamsRepository from 'repositories/TeamsRepository';
-import ResponseSuccess from 'libs/responseSuccess';
+import UpdateDataAppointmentService from '../services/appointments/UpdateDataAppointmentService';
+import BusyTimesRepository from '../repositories/BusyTimesRepository';
+import AppError from '../errors/AppError';
+import TeamsRepository from '../repositories/TeamsRepository';
+import ResponseSuccess from '../libs/responseSuccess';
+import UpdateStatusAppointmentService from '../services/appointments/UpdateStatusAppointmentService';
 import CreateAppointmentService from '../services/appointments/CreateAppointmentService';
 import ListAppointmentService from '../services/appointments/ListAppointmentService';
 import CancelAppointmentService from '../services/appointments/CancelAppointmentService';
@@ -143,7 +143,9 @@ export default class AppointmentsController {
 
       const user = JSON.parse(request.user.id);
 
-      const { contract_id, login: userLogin } = user;
+      console.log(user);
+
+      const { contract_id, id: userId } = user;
 
       await validadeContract(contract_id);
 
@@ -157,7 +159,7 @@ export default class AppointmentsController {
         appointment_id,
         contract_id,
         justify,
-        userLogin,
+        userId,
       });
 
       return response.json(new ResponseSuccess({ appointmentUpdateded }));

@@ -1,10 +1,9 @@
 import { parseISO } from 'date-fns';
 import { injectable, inject } from 'tsyringe';
 
-import AppError from 'errors/AppError';
-import Clients from 'models/entities/Clients';
-import CommodityTypes from 'models/entities/CommodityTypes';
-import { IStatusHistory } from 'interfaces/statusHistory';
+import CommodityTypes from '../../models/entities/CommodityTypes';
+import { IStatusHistory } from '../../interfaces/statusHistory';
+import Clients from '../../models/entities/Clients';
 import Appointments from '../../models/entities/Appointments';
 
 import IAppointmentsRepository from '../../repositories/types/IAppointmentsRepository';

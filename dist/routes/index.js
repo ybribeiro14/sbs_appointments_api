@@ -1,0 +1,22 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var express_1 = require("express");
+var users_routes_1 = __importDefault(require("./users/users.routes"));
+var sessions_routes_1 = __importDefault(require("./users/sessions.routes"));
+var appointments_routes_1 = __importDefault(require("./appointments/appointments.routes"));
+var clients_routes_1 = __importDefault(require("./clients/clients.routes"));
+var commodityTypes_routes_1 = __importDefault(require("./commodityTypes/commodityTypes.routes"));
+var teams_routes_1 = __importDefault(require("./teams/teams.routes"));
+var contracts_routes_1 = __importDefault(require("./users/contracts.routes"));
+var routes = (0, express_1.Router)();
+routes.use('/clients', clients_routes_1.default);
+routes.use('/appointments', appointments_routes_1.default);
+routes.use('/users', users_routes_1.default);
+routes.use('/sessions', sessions_routes_1.default);
+routes.use('/commodity_types', commodityTypes_routes_1.default);
+routes.use('/teams', teams_routes_1.default);
+routes.use('/contracts', contracts_routes_1.default);
+exports.default = routes;

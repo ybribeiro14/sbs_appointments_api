@@ -2,10 +2,10 @@ import { Request, Response } from 'express';
 import * as Yup from 'yup';
 import { container } from 'tsyringe';
 
-import AppError from 'errors/AppError';
-import ResponseSuccess from 'libs/responseSuccess';
-import AppointmentsRepository from 'repositories/AppointmentsRepository';
 import { hash } from 'bcryptjs';
+import AppError from '../errors/AppError';
+import ResponseSuccess from '../libs/responseSuccess';
+import AppointmentsRepository from '../repositories/AppointmentsRepository';
 import CreateUserService from '../services/users/CreateUserService';
 import UsersRepository from '../repositories/UsersRepository';
 

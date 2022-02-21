@@ -1,4 +1,4 @@
-import ContractsRepository from 'repositories/ContractsRepository';
+import ContractsRepository from '../repositories/ContractsRepository';
 
 const validadeContract = async (contract_id: number): Promise<boolean> => {
   try {

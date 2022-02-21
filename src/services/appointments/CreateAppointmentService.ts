@@ -1,15 +1,15 @@
 import { isBefore, format, parseISO, getTime } from 'date-fns';
 import { injectable, inject } from 'tsyringe';
 
-import validadeContract from 'libs/validateContract';
-import calculateGridIndex from 'libs/calculateGridIndex';
-import generateTimesNeeds from 'libs/generateTimesNeeds';
-import TeamsRepository from 'repositories/TeamsRepository';
-import ClientsRepository from 'repositories/ClientsRepository';
-import checkTimeAvailable from 'libs/checkTimeAvailable';
-import Clients from 'models/entities/Clients';
-import CommodityTypes from 'models/entities/CommodityTypes';
-import { IStatusHistory } from 'interfaces/statusHistory';
+import { IStatusHistory } from '../../interfaces/statusHistory';
+import Clients from '../../models/entities/Clients';
+import CommodityTypes from '../../models/entities/CommodityTypes';
+import validadeContract from '../../libs/validateContract';
+import calculateGridIndex from '../../libs/calculateGridIndex';
+import generateTimesNeeds from '../../libs/generateTimesNeeds';
+import TeamsRepository from '../../repositories/TeamsRepository';
+import ClientsRepository from '../../repositories/ClientsRepository';
+import checkTimeAvailable from '../../libs/checkTimeAvailable';
 
 import Appointments from '../../models/entities/Appointments';
 import IAppointmentsRepository from '../../repositories/types/IAppointmentsRepository';

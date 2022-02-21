@@ -1,7 +1,7 @@
-import AppError from 'errors/AppError';
 import { Request, Response } from 'express';
-import ResponseSuccess from 'libs/responseSuccess';
 import { container } from 'tsyringe';
+import ResponseSuccess from '../libs/responseSuccess';
+import AppError from '../errors/AppError';
 
 import AuthenticateUserService from '../services/users/AuthenticateUserService';
 

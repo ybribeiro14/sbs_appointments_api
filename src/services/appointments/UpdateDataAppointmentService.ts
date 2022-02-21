@@ -1,13 +1,12 @@
 import { addMinutes, format, isBefore, parseISO } from 'date-fns';
 import { injectable, inject } from 'tsyringe';
 
-import AppError from 'errors/AppError';
-import Appointments from 'models/entities/Appointments';
-import calculateGridIndex from 'libs/calculateGridIndex';
-import generateTimesNeeds from 'libs/generateTimesNeeds';
-import checkTimeAvailable from 'libs/checkTimeAvailable';
-import BusyTimesRepository from 'repositories/BusyTimesRepository';
 import { ObjectID } from 'typeorm';
+import calculateGridIndex from '../../libs/calculateGridIndex';
+import generateTimesNeeds from '../../libs/generateTimesNeeds';
+import checkTimeAvailable from '../../libs/checkTimeAvailable';
+import BusyTimesRepository from '../../repositories/BusyTimesRepository';
+import Appointments from '../../models/entities/Appointments';
 
 import IAppointmentsRepository from '../../repositories/types/IAppointmentsRepository';
 

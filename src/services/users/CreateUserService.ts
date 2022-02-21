@@ -1,6 +1,6 @@
 import { injectable, inject } from 'tsyringe';
 
-import validadeContract from 'libs/validateContract';
+import validadeContract from '../../libs/validateContract';
 
 import User from '../../models/entities/User';
 import IUsersRepository from '../../repositories/types/IUsersRepository';
