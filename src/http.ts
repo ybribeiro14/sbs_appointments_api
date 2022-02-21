@@ -7,12 +7,15 @@ import { Server } from 'socket.io';
 import cors from 'cors';
 
 import 'express-async-errors';
-// import uploadConfig from '@config/upload';
+import dotenv from 'dotenv';
 import AppError from './errors/AppError';
 import routes from './routes';
 
 import './database/index';
 import './container';
+// import uploadConfig from '@config/upload';
+
+dotenv.config();
 
 const app = express();
 
