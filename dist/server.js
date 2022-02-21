@@ -10,6 +10,6 @@ var src = path_1.default.resolve(__dirname, '../');
 dotenv_1.default.config({ path: "".concat(src, "/.env.").concat(process.env.NODE_ENV) });
 var http_1 = require("./http");
 require("./websocket");
-http_1.serverHttp.listen(3333, function () {
+http_1.serverHttp.listen(process.env.PORT || 3333, function () {
     console.log('🚀 Server started on port 3333');
 });
