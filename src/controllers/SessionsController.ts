@@ -9,7 +9,7 @@ export default class SessionsController {
   public async create(request: Request, response: Response): Promise<Response> {
     try {
       const { login, password, contract_id } = request.body;
-
+      console.log(login, password, contract_id);
       const authenticateUser = container.resolve(AuthenticateUserService);
 
       const { user, token, contract } = await authenticateUser.execute({
@@ -38,6 +38,7 @@ export default class SessionsController {
         new ResponseSuccess({ user: userWithoutPassword, token, contract }),
       );
     } catch (error) {
+      console.log(error);
       return response.json(
         new AppError(
           'Falha ao tentar criar uma sessão',

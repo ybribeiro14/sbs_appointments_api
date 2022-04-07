@@ -38,14 +38,14 @@ class AuthenticateUserService {
     contract_id,
   }: IRequest): Promise<IResponse> {
     const contractsRepository = new ContractsRepository();
-
+    console.log('check contrato');
     const contract = await contractsRepository.findById(contract_id);
     if (!contract) {
       throw new Error('Contrato informado não possui cadastro.');
     }
 
     const user = await this.usersRepository.findByLogin(login, contract_id);
-
+    console.log(user);
     if (!user) {
       throw new Error('Combinação contrato/login/senha incorreta.');
     }

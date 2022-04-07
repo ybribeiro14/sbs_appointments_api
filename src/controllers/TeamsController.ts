@@ -111,8 +111,6 @@ export default class TeamsController {
           'loading_module',
         );
 
-        console.log(checkTeamAppointmentEnable);
-
         if (checkTeamAppointmentEnable.length) {
           throw new Error(
             'Não é permitido desabilitar essa equipe por que ela possui um carregamento em aberto.',

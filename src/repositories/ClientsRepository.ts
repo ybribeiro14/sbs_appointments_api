@@ -69,7 +69,6 @@ class ClientsRepository implements IClientsRepository {
   }
 
   public async update(client: Clients): Promise<boolean> {
-    console.log(client);
     try {
       const clientUpdated = await this.ormRepository.update(
         {

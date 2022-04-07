@@ -143,8 +143,6 @@ export default class AppointmentsController {
 
       const user = JSON.parse(request.user.id);
 
-      console.log(user);
-
       const { contract_id, id: userId } = user;
 
       await validadeContract(contract_id);

@@ -1,4 +1,3 @@
-console.log(process.env.MONGODB_URL)
 module.exports = [
   {
     name: 'default',
